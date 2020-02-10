@@ -1,6 +1,8 @@
-from datetime import datetime
 from src import config
-from src import vkapi
+from src.models import User, Project
+from src.flask_app import session
+from datetime import datetime
+import vkapi
 import os
 import importlib
 import requests
@@ -24,7 +26,7 @@ def make_request(message):
 
 
 def create_answer(data, token):
-    load_modules()
+    # load_modules()
     user_id = data['user_id']
     message = data['body']
     response = make_request(message)
@@ -34,7 +36,7 @@ def create_answer(data, token):
     if intent == "work_logging":
         if entities:
             try:
-                a = log_time(intent, entities)
+                a = log_time(user_id, intent, entities)
                 vkapi.send_message(user_id, token, a)
             except:
                 print('failed')
@@ -57,11 +59,14 @@ def extract_data_from_json(json_response):
     return intent, entities
 
 
-def log_time(intent, entities):
+def log_time(user_id, intent, entities):
     if intent == "work_logging":
-        host = config.JIRA['host']
-        user = config.JIRA['master']
-        request_url = f"https://{host}/rest/api/latest/issue/{entities['issue_name'].upper()}/worklog"
+        host = session.query(Project).filter(Project.project_name == 'ssp').first()
+        user = session.query(User)\
+            .filter(User.project_name == host.project_name).filter(User.user_name == str(user_id)).first()
+        login = user.login
+        password = user.password
+        request_url = f"https://{host.url}/rest/api/latest/issue/{entities['issue_name'].upper()}/worklog"
 
         try:
             comment = entities['comment']
@@ -82,7 +87,7 @@ def log_time(intent, entities):
             'timeSpent': time_spent,
             'started': started
         }
-        request = requests.post(url=request_url, json=json_data, auth=user)
+        request = requests.post(url=request_url, json=json_data, auth=(login, password))
 
         if request.status_code >= 300:
             raise Exception(f'Requests error. {request.status_code}.\nMessage: {request.text}')

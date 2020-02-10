@@ -1,4 +1,5 @@
-from src.flask_app import db
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 
 class Project(db.Model):
@@ -13,11 +14,12 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50))
-    project_name = db.ForeignKey(db.String(50), db.ForeignKey('projects.project_name'))
-    login = db.Column(db.String(50), db.UniqueConstraint)
+    project_name = db.Column(db.ForeignKey('projects.project_name'))
+    login = db.Column(db.String(50))
     password = db.Column(db.String(50))
 
-    db.UniqueConstraint(user_name, project_name)  # , name='uix_1'
+    db.UniqueConstraint(user_name, project_name)
+    db.UniqueConstraint(login)
 
     def __init__(self, user_name, project_name, login, password):
         self.user_name = user_name

@@ -1,12 +1,18 @@
 import os
 
+DATABASE = {
+        'NAME': 'vk_bot_db',
+        'USER': 'postgres',
+        'PASSWORD': 'postgresql123',
+        'HOST': 'localhost'
+}
+
 
 class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'this-needs-to-be-changed'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/vk_bot_db'  # os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE['USER']}:{DATABASE['PASSWORD']}@{DATABASE['HOST']}/{DATABASE['NAME']}"
 
 
 class ProductionConfig(Config):
@@ -34,9 +40,4 @@ token = "acd63c90c7f3963ba4748938ed576b200aff75eda798fba5f46894d4ebfd39939735d58
 confirmation_token = "196e0e88"
 access_token = "5aa2df955aa2df955aa2df95955acca5d455aa25aa2df95074ce843d0498ebf417b7aaa"
 
-rasa_url = "https://00e083cf.ngrok.io"
-
-JIRA = {
-    "host": "jira.sib-soft.ru/jira",
-    "master": ("kimpa", "3010352Qr")
-}
+rasa_url = "https://9dd9d558.ngrok.io"
