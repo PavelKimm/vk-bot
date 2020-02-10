@@ -1,0 +1,19 @@
+# Configuration for Rasa NLU.
+# https://rasa.com/docs/rasa/nlu/components/
+language: ru
+pipeline: supervised_embeddings
+
+# Configuration for Rasa Core.
+# https://rasa.com/docs/rasa/core/policies/
+policies:
+  - name: KerasPolicy
+    epochs: 100
+    max_history: 3
+    augmentation: 20
+    batch_size: 10
+    validation: 0.2
+  - name: Fallbackpolicy
+    fallback_action_name: 'action_default_fallback'
+  - name: MemoizationPolicy
+    max_history: 5
+  - name: FormPolicy

@@ -1,0 +1,51 @@
+intents:
+  - hello
+  - goodbye
+  - store_name
+  - work_logging
+
+
+entities:
+  - user_name
+  - issue_name
+  - comment
+  - spent_time
+
+#  host = jira.sib-soft.ru/jira
+#  request_url = f'https://{host}/rest/api/latest/issue/{issue_name}/worklog'
+#  requests.post(url=request_url, json=json, auth=(user.login, user.password))
+
+#  json:
+#    'comment': your comment,
+#    'started': started time,  (2020-01-23T14:44:00.000+0700)
+#    'timeSpent': spent time
+
+
+actions:
+- utter_hello
+- utter_goodbye
+- utter_store_name
+- utter_work_logging
+
+
+templates:
+  utter_greet:
+  - text: "Привет! Как дела?"
+  - text: "привет"
+  - text: "здравствуй"
+  - text: "доброе утро"
+  - text: "добрый день"
+  - text: "добрый вечер"
+
+  utter_goodbye:
+  - text: "Пока."
+  - text: "до свидания"
+  - text: "я пошел"
+
+  utter_iamabot:
+  - text: "Я бот от Rasa."
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
