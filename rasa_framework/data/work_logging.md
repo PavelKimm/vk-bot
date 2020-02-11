@@ -32,6 +32,7 @@
 - залогай [1d 1h 10m](spent_time) в [wb-7](issue_name) с комментарием [intents и entities](comment)
 - залогай [1h 10m](spent_time) в [wb-7](issue_name) с комментарием [поиск информации](comment)
 - залогай [34m](spent_time) в [sdf-7](issue_name) с комментарием [значения данных](comment)
+- залогай [38m](spent_time) в [sdf-17](issue_name) с комментарием [разбирался с документацией](comment)
 - залогай [1d 26m](spent_time) в [fg-7](issue_name) с комментарием [Консультация с Владимиром](comment)
 - залогай [1d 34m](spent_time) в [d-7](issue_name) с комментарием [информации по интеграционному](comment)
 - залогай [1d 50m](spent_time) в [eyr-7](issue_name) с комментарием [модели для классификации](comment)
