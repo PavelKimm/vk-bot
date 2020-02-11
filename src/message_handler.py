@@ -36,7 +36,7 @@ def create_answer(data, token):
     if intent == "work_logging":
         if entities:
             try:
-                a = log_time(user_id, intent, entities)
+                a = log_time(user_id, entities)
                 vkapi.send_message(user_id, token, a)
             except:
                 print('failed')
@@ -59,38 +59,37 @@ def extract_data_from_json(json_response):
     return intent, entities
 
 
-def log_time(user_id, intent, entities):
-    if intent == "work_logging":
-        host = session.query(Project).filter(Project.project_name == 'ssp').first()
-        user = session.query(User)\
-            .filter(User.project_name == host.project_name).filter(User.user_name == str(user_id)).first()
-        login = user.login
-        password = user.password
-        request_url = f"https://{host.url}/rest/api/latest/issue/{entities['issue_name'].upper()}/worklog"
+def log_time(user_id, entities):
+    host = session.query(Project).filter(Project.project_name == 'ssp').first()
+    user = session.query(User)\
+        .filter(User.project_name == host.project_name).filter(User.user_name == str(user_id)).first()
+    login = user.login
+    password = user.password
+    request_url = f"https://{host.url}/rest/api/latest/issue/{entities['issue_name'].upper()}/worklog"
 
-        try:
-            comment = entities['comment']
-        except:
-            return "комментарий не распознан"
+    try:
+        comment = entities['comment']
+    except:
+        return "комментарий не распознан"
 
-        try:
-            time_spent = entities['spent_time']
-        except:
-            return "затраченное время не распознано"
+    try:
+        time_spent = entities['spent_time']
+    except:
+        return "затраченное время не распознано"
 
-        datetime_obj = datetime.now()
-        logging_time = datetime_obj.strftime("%Y-%m-%dT%H:%M:00.000+0700")
-        started = logging_time
+    datetime_obj = datetime.now()
+    logging_time = datetime_obj.strftime("%Y-%m-%dT%H:%M:00.000+0700")
+    started = logging_time
 
-        json_data = {
-            'comment': comment,
-            'timeSpent': time_spent,
-            'started': started
-        }
-        request = requests.post(url=request_url, json=json_data, auth=(login, password))
+    json_data = {
+        'comment': comment,
+        'timeSpent': time_spent,
+        'started': started
+    }
+    request = requests.post(url=request_url, json=json_data, auth=(login, password))
 
-        if request.status_code >= 300:
-            raise Exception(f'Requests error. {request.status_code}.\nMessage: {request.text}')
+    if request.status_code >= 300:
+        raise Exception(f'Requests error. {request.status_code}.\nMessage: {request.text}')
 
-        return f"[{time_spent}] с комментарием [{comment}] в задачу " \
-               f"[{entities['issue_name']}] успешно залогированы ({str(datetime_obj)[:16]})"
+    return f"[{time_spent}] с комментарием [{comment}] в задачу " \
+           f"[{entities['issue_name']}] успешно залогированы ({str(datetime_obj)[:16]})"
