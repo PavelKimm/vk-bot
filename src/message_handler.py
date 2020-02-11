@@ -3,17 +3,8 @@ from src.models import User, Project
 from src.flask_app import session
 from datetime import datetime
 import vkapi
-import os
-import importlib
 import requests
 import json
-
-
-def load_modules():
-    files = os.listdir("./commands")
-    modules = filter(lambda x: x.endswith('.py'), files)
-    for m in modules:
-        importlib.import_module("commands." + m[0:-3])
 
 
 def make_request(message):
@@ -26,26 +17,13 @@ def make_request(message):
 
 
 def create_answer(data, token):
-    # load_modules()
     user_id = data['user_id']
     message = data['body']
     response = make_request(message)
     json_response = json.loads(response.text)
     intent, entities = extract_data_from_json(json_response)
 
-    if intent == "work_logging":
-        if entities:
-            try:
-                a = log_time(user_id, entities)
-                vkapi.send_message(user_id, token, a)
-            except:
-                print('failed')
-                vkapi.send_message(user_id, token, "не все entities распознаны")
-                print(entities)
-        else:
-            vkapi.send_message(user_id, token, "entities не распознаны")
-    else:
-        vkapi.send_message(user_id, token, "Команда не распознана")
+    define_and_execute_command(intent, entities, user_id, token)
 
 
 def extract_data_from_json(json_response):
@@ -55,8 +33,26 @@ def extract_data_from_json(json_response):
         try:
             entities = {entity['entity']: entity['value'] for entity in json_response['entities']}
         except KeyError:
-            print('failed')
+            print('ошибка извлечения данных')
     return intent, entities
+
+
+def define_and_execute_command(intent, entities, user_id, token):
+    if intent == "work_logging":
+        if entities:
+            try:
+                answer = log_time(user_id, entities)
+                vkapi.send_message(user_id, token, answer)
+            except:
+                print('failed')
+                vkapi.send_message(user_id, token, "не все entities распознаны")
+                print(entities)
+        else:
+            vkapi.send_message(user_id, token, "entities не распознаны")
+    elif intent == "":
+        pass
+    else:
+        vkapi.send_message(user_id, token, "Команда не распознана")
 
 
 def log_time(user_id, entities):
