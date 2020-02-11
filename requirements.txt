@@ -1,7 +1,6 @@
 absl-py==0.9.0
 aiofiles==0.4.0
 aiohttp==3.6.2
-apixu==0.3.0
 APScheduler==3.6.3
 astor==0.8.1
 async-generator==1.10
@@ -36,7 +35,6 @@ dill==0.2.9
 docopt==0.6.2
 docutils==0.15.2
 dopamine-rl==3.0.1
-en-core-web-sm==2.0.0
 fakeredis==1.1.0
 fbmessenger==6.0.0
 Flask==1.1.1
@@ -103,6 +101,7 @@ preshed==1.0.1
 promise==2.3
 prompt-toolkit==3.0.3
 protobuf==3.11.2
+psycopg2==2.8.4
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.19
