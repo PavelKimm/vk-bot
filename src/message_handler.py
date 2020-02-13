@@ -53,7 +53,7 @@ def define_and_execute_command(intent, entities, user_id, token):
         else:
             vkapi.send_message(user_id, token, "entities не распознаны")
     elif intent == "get_my_tasks":
-        start_date = datetime.now().date() - timedelta(days=5)
+        start_date = datetime.now().date() - timedelta(days=30)
         jql = f'worklogAuthor = {user.login} AND worklogDate >= {start_date}'
         answer = get_my_tasks(host, user,
                               json_data={'jql': jql, 'startAt': 0, 'maxResults': 100, 'fields': ['summary', 'project']})
