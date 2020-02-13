@@ -3,6 +3,7 @@ intents:
   - goodbye
   - store_name
   - work_logging
+  - get_my_tasks
 
 
 entities:
@@ -26,6 +27,7 @@ actions:
 - utter_goodbye
 - utter_store_name
 - utter_work_logging
+- utter_get_my_tasks
 
 
 templates:
@@ -44,6 +46,9 @@ templates:
 
   utter_iamabot:
   - text: "Я бот от Rasa."
+
+  utter_get_my_tasks:
+  - text: "Вот ваши логирования"
 
 
 session_config:

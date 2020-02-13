@@ -1,19 +1,10 @@
 from src import config
 from src.models import User, Project
 from src.flask_app import session
-from datetime import datetime
+from datetime import datetime, timedelta
 import vkapi
 import requests
 import json
-
-
-def make_request(message):
-    request_url = config.rasa_url + "/model/parse"
-    json_data = {'text': message}
-    response = requests.post(request_url, json=json_data)
-    if response.status_code >= 300:
-        raise Exception(f'Requests error. {response.status_code}.\nMessage: {response.text}')
-    return response
 
 
 def create_answer(data, token):
@@ -24,6 +15,15 @@ def create_answer(data, token):
     intent, entities = extract_data_from_json(json_response)
 
     define_and_execute_command(intent, entities, user_id, token)
+
+
+def make_request(message):
+    request_url = config.rasa_url + "/model/parse"
+    json_data = {'text': message}
+    response = requests.post(request_url, json=json_data)
+    if response.status_code >= 300:
+        raise Exception(f'Requests error. {response.status_code}.\nMessage: {response.text}')
+    return response
 
 
 def extract_data_from_json(json_response):
@@ -38,27 +38,44 @@ def extract_data_from_json(json_response):
 
 
 def define_and_execute_command(intent, entities, user_id, token):
+    host = session.query(Project).filter(Project.project_name == 'ssp').first()
+    user = session.query(User) \
+        .filter(User.project_name == host.project_name).filter(User.user_name == str(user_id)).first()
+
     if intent == "work_logging":
         if entities:
             try:
-                answer = log_time(user_id, entities)
+                answer = log_time(host, user, entities)
                 vkapi.send_message(user_id, token, answer)
             except:
-                print('failed')
                 vkapi.send_message(user_id, token, "не все entities распознаны")
                 print(entities)
         else:
             vkapi.send_message(user_id, token, "entities не распознаны")
-    elif intent == "":
-        pass
+    elif intent == "get_my_tasks":
+        start_date = datetime.now().date() - timedelta(days=5)
+        jql = f'worklogAuthor = {user.login} AND worklogDate >= {start_date}'
+        answer = get_my_tasks(host, user,
+                              json_data={'jql': jql, 'startAt': 0, 'maxResults': 100, 'fields': ['summary', 'project']})
+        vkapi.send_message(user_id, token, answer)
     else:
         vkapi.send_message(user_id, token, "Команда не распознана")
 
 
-def log_time(user_id, entities):
-    host = session.query(Project).filter(Project.project_name == 'ssp').first()
-    user = session.query(User)\
-        .filter(User.project_name == host.project_name).filter(User.user_name == str(user_id)).first()
+def get_my_tasks(host, user, json_data):
+    request_url = f"https://{host.url}/rest/api/latest/search/"
+    request = requests.post(url=request_url, json=json_data, auth=(user.login, user.password))
+    if request.status_code >= 300:
+        raise Exception(f'Requests error. {request.status_code}.\nMessage: {request.text}')
+    task_count = request.json()['total']
+    tasks = request.json()['issues']
+    tasks_summary = ""
+    for task in tasks:
+        tasks_summary += f"{task['key']}: {task['fields']['summary']}\n"
+    return f"Всего тасков: {task_count}\n{tasks_summary}"
+
+
+def log_time(host, user, entities):
     login = user.login
     password = user.password
     request_url = f"https://{host.url}/rest/api/latest/issue/{entities['issue_name'].upper()}/worklog"
