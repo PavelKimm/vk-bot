@@ -3,7 +3,7 @@ import os
 DATABASE = {
         'NAME': 'vk_bot_db',
         'USER': 'postgres',
-        'PASSWORD': 'postgresql123',
+        'PASSWORD': 'root',
         'HOST': 'localhost'
 }
 
@@ -40,4 +40,4 @@ token = "acd63c90c7f3963ba4748938ed576b200aff75eda798fba5f46894d4ebfd39939735d58
 confirmation_token = "196e0e88"
 access_token = "5aa2df955aa2df955aa2df95955acca5d455aa25aa2df95074ce843d0498ebf417b7aaa"
 
-rasa_url = "https://fabaccb0.ngrok.io"
+rasa_url = "https://d3c0f85a.ngrok.io"
